@@ -33,13 +33,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
-        // Build participants list HTML
+        // Build participants list HTML (include data-email and a delete button)
         let participantsHtml = "";
         if (details.participants && details.participants.length > 0) {
           participantsHtml =
             '<ul class="participants-list">' +
             details.participants
-              .map((p) => `<li class="participant-item">${escapeHtml(p)}</li>`)
+              .map((p) =>
+                `<li class="participant-item" data-email="${escapeHtml(p)}" data-activity="${escapeHtml(
+                  name
+                )}"><span class="participant-name">${escapeHtml(p)}</span><button class="delete-btn" aria-label="Unregister participant" title="Unregister">&times;</button></li>`
+              )
               .join("") +
             "</ul>";
         } else {
@@ -93,6 +97,8 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        // Refresh activities so the newly-registered participant appears immediately
+        await fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
@@ -109,6 +115,42 @@ document.addEventListener("DOMContentLoaded", () => {
       messageDiv.className = "error";
       messageDiv.classList.remove("hidden");
       console.error("Error signing up:", error);
+    }
+  });
+
+  // Delegated click handler for unregister/delete buttons inside the activities list
+  activitiesList.addEventListener("click", async (ev) => {
+    const btn = ev.target.closest(".delete-btn");
+    if (!btn) return;
+
+    const li = btn.closest(".participant-item");
+    if (!li) return;
+
+    const email = li.dataset.email;
+    const activity = li.dataset.activity;
+    if (!email || !activity) return;
+
+    const confirmed = window.confirm(`Unregister ${email} from ${activity}?`);
+    if (!confirmed) return;
+
+    try {
+      const resp = await fetch(
+        `/activities/${encodeURIComponent(activity)}/unregister?email=${encodeURIComponent(email)}`,
+        { method: "POST" }
+      );
+
+      const data = await resp.json().catch(() => ({}));
+
+      if (!resp.ok) {
+        alert(data.detail || data.error || "Failed to unregister participant");
+        return;
+      }
+
+      // Refresh activities list so counts and participants update consistently
+      await fetchActivities();
+    } catch (err) {
+      console.error("Unregister error:", err);
+      alert("Network error while trying to unregister participant");
     }
   });
 
