@@ -74,6 +74,74 @@ section h3 {
   margin-bottom: 8px;
 }
 
+/* Participants list styling */
+.activity-card .participants {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #eee;
+}
+
+.activity-card .participants h5 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #1a237e;
+  letter-spacing: 0.2px;
+}
+
+.participants-list {
+  list-style: none; /* hide bullets */
+  padding-left: 0;
+  margin: 0;
+}
+
+.participant-item {
+  padding: 6px 0;
+  font-size: 14px;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+/* Participant name (keeps text from overflowing) */
+.participant-name {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+/* Delete button styling (simple "x" icon) */
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #c0392b;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.delete-btn:hover {
+  background: rgba(192,57,43,0.08);
+}
+
+/* Accessible focus state */
+.delete-btn:focus {
+  outline: 2px solid rgba(52,152,219,0.35);
+  outline-offset: 2px;
+}
+
+/* Placeholder when no participants */
+.participant-item.empty {
+  color: #888;
+  font-style: italic;
+}
+
 .form-group {
   margin-bottom: 15px;
 }
